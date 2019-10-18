@@ -340,17 +340,48 @@ class DAO
     // Après avoir testé et validé une méthode, faites un commit et un push pour transmettre cette version aux autres développeurs.
     
     
-    public function existeAdrMailUtilisateur($adrMail){
-        if ( $this->existePseudoUtilisateur($adrMail) == true ) return false;
+    public function existeAdrMailUtilisateur($adrMail)
+    {
+        $texte_de_la_requete = "Select count";
+        $texte_de_la_requete .= "From tracegps_utilisateurs";
+        $texte_de_la_requete .= "Where adrMail = ".$adrMail;
+        echo $texte_de_la_requete;
     }
     
-    
-    
-    
-    
-    
-    
-    
+    public function getUnUtilisateur($pseudo) {
+        // préparation de la requête de recherche
+        $txt_req = "Select id, pseudo, mdpSha1, adrMail, numTel, niveau, dateCreation, nbTraces, dateDerniereTrace";
+        $txt_req .= " from tracegps_vue_utilisateurs";
+        $txt_req .= " where pseudo = :pseudo";
+        $req = $this->cnx->prepare($txt_req);
+        // liaison de la requête et de ses paramètres
+        $req->bindValue("pseudo", $pseudo, PDO::PARAM_STR);
+        // extraction des données
+        $req->execute();
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        // libère les ressources du jeu de données
+        $req->closeCursor();
+        
+        // traitement de la réponse
+        if ( ! $uneLigne) {
+            return null;
+        }
+        else {
+            // création d'un objet Utilisateur
+            $unId = utf8_encode($uneLigne->id);
+            $unPseudo = utf8_encode($uneLigne->pseudo);
+            $unMdpSha1 = utf8_encode($uneLigne->mdpSha1);
+            $uneAdrMail = utf8_encode($uneLigne->adrMail);
+            $unNumTel = utf8_encode($uneLigne->numTel);
+            $unNiveau = utf8_encode($uneLigne->niveau);
+            $uneDateCreation = utf8_encode($uneLigne->dateCreation);
+            $unNbTraces = utf8_encode($uneLigne->nbTraces);
+            $uneDateDerniereTrace = utf8_encode($uneLigne->dateDerniereTrace);
+            
+            $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
+            return $unUtilisateur;
+        }
+    }
     
     
     
