@@ -35,16 +35,13 @@ class PointDeTrace extends Point
         $uneDateHeure, $unRythmeCardio, $unTempsCumule, $uneDistanceCumulee, $uneVitesse) {
             // appelle le constructeur de la classe mère avec 3 paramètres
             parent::__construct($uneLatitude, $uneLongitude, $uneAltitude);
-            $unIdTrace = 0;
-            $unID = 0;
-            //$uneLatitude = 0;
-            //$uneLongitude = 0;
-            //$uneAltitude = 0;
-            $uneDateHeure = 0;
-            $unRythmeCardio = 0;
-            $unTempsCumule = 0;
-            $uneDistanceCumulee = 0;
-            $uneVitesse = 0;
+            $this->idTrace = $unIdTrace;
+            $this->id = $unIdTrace;
+            $this->dateHeure = $uneDateHeure;
+            $this->rythmeCardio = $unRythmeCardio;
+            $this->tempsCumule = $unTempsCumule;
+            $this->distanceCumulee = $uneDistanceCumulee;
+            $this->vitesse = $uneVitesse;
     }
     
     // ------------------------------------------------------------------------------------------------------
