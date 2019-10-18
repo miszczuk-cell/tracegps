@@ -362,15 +362,65 @@ class DAO
     }
     
     public function getLesUtilisateursAutorisant($idUtilisateur){
-        $texte_de_la_requete = "Select id From tracegps_utilisateurs INNER JOIN tracegps_autorisations ON  ";
+        $texte_de_la_requete = "Select id, pseudo, mdpSha1, adrMail, numTel, niveau, dateCreation, nbTraces, dateDerniereTrace FROM tracegps_vue_utilisateurs INNER JOIN tracegps_autorisations ON tracegps_autorisations.idAutorisant = tracegps_vue_utilisateurs.id WHERE niveau = 1 AND idAutorise = ".$idUtilisateur;
+        echo $texte_de_la_requete;
         $req = $this->cnx->prepare($texte_de_la_requete);
         $req->execute();
         $lesUtilisateurs = array();
-        while($uneLigne = $req->fetch(PDO::FETCH_OBJ))
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        while($uneLigne)
         {
-            
-            $utilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
+            $unId = $uneLigne->id;
+            $unPseudo = $uneLigne->pseudo;
+            $unMdpSha1 = $uneLigne->mdpSha1;
+            $uneAdrMail = $uneLigne->adrMail;
+            $unNumTel = $uneLigne->numTel;
+            $unNiveau = $uneLigne->niveau;
+            $uneDateCreation = $uneLigne->dateCreation;
+            $unNbTraces = $uneLigne->nbTraces;
+            $uneDateDerniereTrace = $uneLigne-> dateDerniereTrace;
+            $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
+            $lesUtilisateurs[] = $unUtilisateur;
+            $uneLigne = $req->fetch(PDO::FETCH_OBJ);
         }
+        return $lesUtilisateurs;
+    }
+    
+    public function getLesUtilisateursAutorises($idUtilisateur){
+        $texte_de_la_requete = "Select Distinct id, pseudo, mdpSha1, adrMail, numTel, niveau, dateCreation, nbTraces, dateDerniereTrace FROM tracegps_vue_utilisateurs INNER JOIN tracegps_autorisations ON tracegps_autorisations.idAutorisant = tracegps_vue_utilisateurs.id WHERE tracegps_autorisations.idAutorisant IN (SELECT tracegps_autorisations.idAutorise FROM tracegps_autorisations WHERE tracegps_autorisations.idAutorisant = ".$idUtilisateur.")";
+        echo $texte_de_la_requete;
+        $req = $this->cnx->prepare($texte_de_la_requete);
+        $req->execute();
+        $lesUtilisateurs = array();
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        while($uneLigne)
+        {
+            $unId = $uneLigne->id;
+            $unPseudo = $uneLigne->pseudo;
+            $unMdpSha1 = $uneLigne->mdpSha1;
+            $uneAdrMail = $uneLigne->adrMail;
+            $unNumTel = $uneLigne->numTel;
+            $unNiveau = $uneLigne->niveau;
+            $uneDateCreation = $uneLigne->dateCreation;
+            $unNbTraces = $uneLigne->nbTraces;
+            $uneDateDerniereTrace = $uneLigne-> dateDerniereTrace;
+            $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
+            $lesUtilisateurs[] = $unUtilisateur;
+            $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        }
+        return $lesUtilisateurs;
+    }
+    
+    
+   public function autoriseAConsulter($idAutorisant, $idAutorise){
+        $texte_de_la_requete = "Select Distinct id, pseudo, mdpSha1, adrMail, numTel, niveau, dateCreation, nbTraces, dateDerniereTrace FROM tracegps_vue_utilisateurs INNER JOIN tracegps_autorisations ON tracegps_autorisations ".$idAutorise." = tracegps_vue_utilisateurs.id WHERE tracegps_autorisations.idAutorisant IN (SELECT tracegps_autorisations.idAutorise FROM tracegps_autorisations WHERE tracegps_autorisations.idAutorisant = ".$idAutorise.")";
+        echo $texte_de_la_requete;
+        $req = $this->cnx->prepare($texte_de_la_requete);
+        $req->execute();
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+      
+        }
+        return $uneLigne;
     }
     
     /*public function getUnUtilisateur($pseudo) {
