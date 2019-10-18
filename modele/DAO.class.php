@@ -413,53 +413,35 @@ class DAO
     
     
    public function autoriseAConsulter($idAutorisant, $idAutorise){
-        $texte_de_la_requete = "Select Distinct id, pseudo, mdpSha1, adrMail, numTel, niveau, dateCreation, nbTraces, dateDerniereTrace FROM tracegps_vue_utilisateurs INNER JOIN tracegps_autorisations ON tracegps_autorisations ".$idAutorise." = tracegps_vue_utilisateurs.id WHERE tracegps_autorisations.idAutorisant IN (SELECT tracegps_autorisations.idAutorise FROM tracegps_autorisations WHERE tracegps_autorisations.idAutorisant = ".$idAutorisant.")";
+        $texte_de_la_requete = "Select count(*) as id FROM tracegps_autorisations WHERE idAutorisant = ".$idAutorisant." AND idAutorise = ".$idAutorise;
+
         echo $texte_de_la_requete;
         $req = $this->cnx->prepare($texte_de_la_requete);
         $req->execute();
         $uneLigne = $req->fetch(PDO::FETCH_OBJ);
         
-        if
+        if($uneLigne->id > 0)
+        {
+            return true;
+        }
         
-        return $uneLigne;
+        else 
+        {
+            return false;
+        }
     }
     
-    /*public function getUnUtilisateur($pseudo) {
-        // préparation de la requête de recherche
-        $txt_req = "Select id, pseudo, mdpSha1, adrMail, numTel, niveau, dateCreation, nbTraces, dateDerniereTrace";
-        $txt_req .= " from tracegps_vue_utilisateurs";
-        $txt_req .= " where pseudo = :pseudo";
-        $req = $this->cnx->prepare($txt_req);
-        // liaison de la requête et de ses paramètres
-        $req->bindValue("pseudo", $pseudo, PDO::PARAM_STR);
-        // extraction des données
+    
+    public function creerUneAutorisation($idAutorisant,$idAutorise){
+        $texte_de_la_requete = "insert into tracegps_autorisations (idAutorisant, idAutorise) values ($idAutorisant,$idAutorise)";
+        
+        echo $texte_de_la_requete;
+        $req = $this->cnx->prepare($texte_de_la_requete);
         $req->execute();
         $uneLigne = $req->fetch(PDO::FETCH_OBJ);
-        // libère les ressources du jeu de données
-        $req->closeCursor();
         
-        // traitement de la réponse
-        if ( ! $uneLigne) {
-            return null;
-        }
-        else {
-            // création d'un objet Utilisateur
-            $unId = utf8_encode($uneLigne->id);
-            $unPseudo = utf8_encode($uneLigne->pseudo);
-            $unMdpSha1 = utf8_encode($uneLigne->mdpSha1);
-            $uneAdrMail = utf8_encode($uneLigne->adrMail);
-            $unNumTel = utf8_encode($uneLigne->numTel);
-            $unNiveau = utf8_encode($uneLigne->niveau);
-            $uneDateCreation = utf8_encode($uneLigne->dateCreation);
-            $unNbTraces = utf8_encode($uneLigne->nbTraces);
-            $uneDateDerniereTrace = utf8_encode($uneLigne->dateDerniereTrace);
-            
-            $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
-            return $unUtilisateur;
-        }
-        
-    }*/
-    
+        if(PDOStatement::exec())
+    }
     
     
     
@@ -1073,7 +1055,7 @@ class DAO
 
 
     
-} // fin de la classe DAO
+} //fin de la classe DAO
 
 
 // ATTENTION : on ne met pas de balise de fin de script pour ne pas prendre le risque
