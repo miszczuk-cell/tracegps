@@ -340,16 +340,9 @@ class DAO
     // Après avoir testé et validé une méthode, faites un commit et un push pour transmettre cette version aux autres développeurs.
     
     
-    
-    
-    
-    // --------------------------------------------------------------------------------------
-    // début de la zone attribuée au développeur 1 (xxxxxxxxxxxxxxxxxxxx) : lignes 350 à 549
-    // --------------------------------------------------------------------------------------
-    
-
-    
-    
+    public function existeAdrMailUtilisateur($adrMail){
+        if ( $this->existePseudoUtilisateur($adrMail) == true ) return false;
+    }
     
     
     

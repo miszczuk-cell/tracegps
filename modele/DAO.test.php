@@ -192,6 +192,7 @@ else {
 // Après avoir testé et validé une méthode, faites un commit et un push pour transmettre cette version aux autres développeurs.
 
 
+
 // ferme la connexion à MySQL :
 unset($dao);
 ?>
