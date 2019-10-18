@@ -58,14 +58,11 @@ class Utilisateur
     public function getDateCreation() {return $this->dateCreation;}
     public function setDateCreation($uneDateCreation) { $this->dateCreation = $uneDateCreation;}
     
-    public function getId() {return $this->id;}
-    public function setId($unId) { $this->id = $unId;}
-    
     public function getNbTraces() {return $this->nbTraces;}
     public function setNbTraces($unNbTraces) { $this->nbTraces = $unNbTraces;}
     
-    public function getUneDateDerniereTrace() {return $this->dateDerniereTrace;}
-    public function setUneDateDerniereTrace($uneDateDerniereTrace) { $this->dateDerniereTrace = $uneDateDerniereTrace;}
+    public function getDateDerniereTrace() {return $this->dateDerniereTrace;}
+    public function setDateDerniereTrace($uneDateDerniereTrace) { $this->dateDerniereTrace = $uneDateDerniereTrace;}
     
     
     public function toString() {
