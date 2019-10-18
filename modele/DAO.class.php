@@ -342,13 +342,24 @@ class DAO
     
     public function existeAdrMailUtilisateur($adrMail)
     {
-        $texte_de_la_requete = "Select count";
-        $texte_de_la_requete .= "From tracegps_utilisateurs";
-        $texte_de_la_requete .= "Where adrMail = ".$adrMail;
-        echo $texte_de_la_requete;
+        $texte_de_la_requete = "Select count(*) AS nbAdresse ";
+        $texte_de_la_requete .= "From tracegps_utilisateurs ";
+        $texte_de_la_requete .= "Where adrMail = '".$adrMail."'";
+        $req = $this->cnx->prepare($texte_de_la_requete);
+        $req->execute();
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        if (($uneLigne->nbAdresse) > 0)
+        {
+            return true;
+        }
+        
+        else
+        {
+            return false;
+        }
+        
     }
-    
-    public function getUnUtilisateur($pseudo) {
+    /*public function getUnUtilisateur($pseudo) {
         // préparation de la requête de recherche
         $txt_req = "Select id, pseudo, mdpSha1, adrMail, numTel, niveau, dateCreation, nbTraces, dateDerniereTrace";
         $txt_req .= " from tracegps_vue_utilisateurs";
@@ -381,9 +392,8 @@ class DAO
             $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
             return $unUtilisateur;
         }
-    }
-    
-    
+        
+    }*/
     
     
     
