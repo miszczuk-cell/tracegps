@@ -4,6 +4,6 @@ include_once ('DAO.class.php');
 //include_once ('_DAO.mysql.class.php');
 $dao = new DAO();
 
-$resultat = $dao->existeAdrMailUtilisateur("ddelasalle.sio.miszczuk.i@gmail.com");
+$resultat = $dao->existeAdrMailUtilisateur("sdelasalle.sio.miszczuk.i@gmail.com");
 echo $resultat;
 ?>
