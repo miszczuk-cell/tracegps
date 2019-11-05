@@ -439,14 +439,30 @@ class DAO
         $req = $this->cnx->prepare($texte_de_la_requete);
         $req->execute();
         $uneLigne = $req->fetch(PDO::FETCH_OBJ);
-        
-        if(PDOStatement::exec())
     }
     
     
+    public function supprimerUneAutorisation($idAutorisant, $idAutorise)
+    {
+        $req = $this->cnx->prepare("DELETE FROM tracegps_autorisations WHERE idAutorisant = ".$idAutorisant." AND idAutorise = ".$idAutorise);
+        $ok = $req->execute();
+        return $ok;
+    }
     
-    
-    
+    public function getLesPointsDeTrace($idTrace)
+    {
+        $req = $this->cnx->prepare("SELECT * FROM tracegps_points WHERE idTrace = ".$idTrace);
+        $req->execute();
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        $lesPointsDeTrace = array();
+        while ($uneLigne)
+        {
+            $unId = $uneLigne->id;
+            $unelatitude = $uneLigne->latitude;
+            $unelongitude = $uneLigne->longitude;
+        }
+        
+    }
     
     
     
