@@ -31,12 +31,12 @@ class PointDeTrace extends Point
     // $unTempsCumule : temps cumulé depuis le départ(en secondes)
     // $uneDistanceCumulee : distance cumulée depuis le départ (en Km)
     // $uneVitesse : vitesse instantanée, calculée entre le point précédent et le point suivant (en Km/h)
-    public function __construct($unIdTrace, $unID, $uneLatitude, $uneLongitude, $uneAltitude,
+    public function __construct($unIdTrace, $unId, $uneLatitude, $uneLongitude, $uneAltitude,
         $uneDateHeure, $unRythmeCardio, $unTempsCumule, $uneDistanceCumulee, $uneVitesse) {
             // appelle le constructeur de la classe mère avec 3 paramètres
             parent::__construct($uneLatitude, $uneLongitude, $uneAltitude);
             $this->idTrace = $unIdTrace;
-            $this->id = $unIdTrace;
+            $this->id = $unId;
             $this->dateHeure = $uneDateHeure;
             $this->rythmeCardio = $unRythmeCardio;
             $this->tempsCumule = $unTempsCumule;

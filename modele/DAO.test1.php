@@ -31,13 +31,32 @@ include_once ('DAO.class.php');
 $dao = new DAO();
 
 
-// test de la méthode creerUneAutorisation ---------------------------------------------------------
+// test de la méthode creerUnPointDeTrace ---------------------------------------------------------
 // modifié par Jim le 13/8/2018
-echo "<h3>Test de creerUneAutorisation : </h3>";
-if ($dao->creerUneAutorisation(2, 1)) $ok = "oui"; else $ok = "non";
-echo "<p>La création de l'autorisation de l'utilisateur 2 vers l'utilisateur 1 a réussi : <b>" . $ok . "</b><br>";
-if ($dao->creerUneAutorisation(2, 1)) $ok = "oui"; else $ok = "non";
-echo "<p>La création de l'autorisation de l'utilisateur 2 vers l'utilisateur 1 a réussi : <b>" . $ok . "</b><br>";
+echo "<h3>Test de creerUnPointDeTrace : </h3>";
+// on affiche d'abord le nombre de points (10) de la trace 2
+$lesPoints = $dao->getLesPointsDeTrace(2);
+$nbPoints = sizeof($lesPoints);
+echo "<p>Nombre de points de la trace 2 : " . $nbPoints . "</p>";
+// on crée un sixième point et on l'ajoute à la trace 1
+$unIdTrace = 2;
+$unID = 12;
+$uneLatitude = 48.20;
+$uneLongitude = -1.55;
+$uneAltitude = 50;
+$uneDateHeure = date('Y-m-d H:i:s', time());
+$unRythmeCardio = 80;
+$unTempsCumule = 0;
+$uneDistanceCumulee = 0;
+$uneVitesse = 15;
+$unPoint = new PointDeTrace($unIdTrace, $unID, $uneLatitude, $uneLongitude, $uneAltitude, $uneDateHeure, $unRythmeCardio, $unTempsCumule, $uneDistanceCumulee, $uneVitesse);
+$ok = $dao->creerUnPointDeTrace($unPoint);
+echo "Résultat : " . $ok;
+// on affiche à nouveau le nombre de points (11) de la trace 2
+$lesPoints = $dao->getLesPointsDeTrace(2);
+$nbPoints = sizeof($lesPoints);
+echo "<p>Nombre de points de la trace 2 : " . $nbPoints . "</p>";
+echo ('<br>');
 
 
 
