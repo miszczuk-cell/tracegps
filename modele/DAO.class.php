@@ -465,10 +465,18 @@ class DAO
         while ($uneLigne)
         {
             $unId = $uneLigne->id;
-            $unelatitude = $uneLigne->latitude;
-            $unelongitude = $uneLigne->longitude;
+            $uneLatitude = $uneLigne->latitude;
+            $uneLongitude = $uneLigne->longitude;
+            $uneAltitude = $uneLigne->altitude;
+            $uneDateHeure = $uneLigne->dateHeure;
+            $unRythmeCardio = $uneLigne->rythmeCardio;
+            
+            $unPointDeTrace = new PointDeTrace($idTrace, $unId, $uneLatitude, $uneLongitude, $uneAltitude, $uneDateHeure, $unRythmeCardio, "00:00:00", 0, 0);
+            $lesPointsDeTrace[] = $unPointDeTrace;
+            $uneLigne = $req->fetch(PDO::FETCH_OBJ);
         }
-        
+        $req->closeCursor();
+        return $lesPointsDeTrace;
     }
     
     
