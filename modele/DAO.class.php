@@ -479,11 +479,40 @@ class DAO
         return $lesPointsDeTrace;
     }
     
+    public function getUneTrace($idTrace)
+    {
+        $req = $this->cnx->prepare("SELECT * FROM tracegps_traces WHERE id = ".$idTrace);
+        $req->execute();
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        $unId = $uneLigne->id;
+        $uneDateHeureDebut = $uneLigne->dateDebut;
+        $uneDateHeureFin = $uneLigne->dateFin;
+        $terminee = $uneLigne->terminee;
+        $unIdUtilisateur = $uneLigne->idUtilisateur;
+        $uneTrace = new Trace($unId, $uneDateHeureDebut, $uneDateHeureFin, $terminee, $unIdUtilisateur);
+        $lesPointsDeTrace = DAO::getLesPointsDeTrace($idTrace);
+        $uneTrace->setLesPointsDeTrace($lesPointsDeTrace);
+        return $uneTrace;
+    }
     
+    public function getToutesLesTraces()
+    {
+        $lesTraces = array();
+        $req = "SELECT id FROM tracegps_traces";
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        $req->execute();
+        while ($uneLigne)
+        {
+            $uneTrace = DAO::getUneTrace($uneLigne->id);
+            $lesTraces[] = $uneTrace;
+        }
+        return $lesTraces;
+    }
     
-    
-    
-    
+    public function getLesTraces($idUtilisateur)
+    {
+        
+    }
     
     
     
