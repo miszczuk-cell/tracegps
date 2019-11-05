@@ -437,7 +437,6 @@ class DAO
         $txt_req = "insert into tracegps_autorisations (idAutorisant, idAutorise) values (:idAutorisant, :idAutorise)";
         $req = $this->cnx->prepare($txt_req);
         
-<<<<<<< HEAD
         // liaison de la requête et de ses paramètres
         $req->bindValue("idAutorisant", $idAutorisant, PDO::PARAM_INT);
         $req->bindValue("idAutorise", $idAutorise, PDO::PARAM_INT);
@@ -446,26 +445,16 @@ class DAO
         $ok = $req->execute();
         
         return $ok;
-=======
-        echo $texte_de_la_requete;
-        $req = $this->cnx->prepare($texte_de_la_requete);
-        $req->execute();
-        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
->>>>>>> branch 'master' of https://github.com/miszczuk-cell/tracegps.git
     }
     
     
-<<<<<<< HEAD
- 
-    
-=======
     public function supprimerUneAutorisation($idAutorisant, $idAutorise)
     {
         $req = $this->cnx->prepare("DELETE FROM tracegps_autorisations WHERE idAutorisant = ".$idAutorisant." AND idAutorise = ".$idAutorise);
         $ok = $req->execute();
         return $ok;
     }
->>>>>>> branch 'master' of https://github.com/miszczuk-cell/tracegps.git
+
     
     public function getLesPointsDeTrace($idTrace)
     {
