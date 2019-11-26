@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Projet TraceGPS
 // fichier : modele/DAO.class.php   (DAO : Data Access Object)
 // Rôle : fournit des méthodes d'accès à la bdd tracegps (projet TraceGPS) au moyen de l'objet PDO
@@ -539,7 +539,17 @@ class DAO
     }
     
     
-    
+    public function supprimeruneTrace($idTrace)
+    {
+        
+        $req = $this->cnx->prepare("SELECT * FROM tracegps_traces WHERE id = :idTrace");
+        $req->bindValue(":idTrace", utf8_decode($idTrace), PDO::PARAM_INT);
+        $req->execute();
+        
+        $req = $this->cnx->prepare("SELECT * FROM tracegps_points WHERE idTrace = :idTrace");
+        $req->bindValue(":idTrace", utf8_decode($idTrace), PDO::PARAM_INT);
+        $req->execute();
+    }
     
     
     

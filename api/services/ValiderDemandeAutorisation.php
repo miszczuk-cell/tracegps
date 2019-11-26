@@ -20,7 +20,6 @@ global $ADR_MAIL_EMETTEUR, $ADR_SERVICE_WEB;
 
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
-
 // Récupération des données transmises
 $mdpSha1 = ( empty($this->request['a'])) ? "" : $this->request['a'];
 $pseudoAutorisant = ( empty($this->request['b'])) ? "" : $this->request['b'];
