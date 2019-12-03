@@ -533,24 +533,24 @@ class DAO
     }
     
     
-    public function getLesTraces($idUtilisateur)
-    {
-        $lesTraces = array();
-        $txt_req = "SELECT id FROM tracegps_traces Where id = idUtilisateur";
-        $req = $this->cnx->prepare($txt_req);
-        //$uneLigne = $req->fetch(PDO::FETCH_OBJ);
+//     public function getLesTraces($idUtilisateur)
+//     {
+//         $lesTraces = array();
+//         $txt_req = "SELECT id FROM tracegps_traces Where id = idUtilisateur";
+//         $req = $this->cnx->prepare($txt_req);
+//         //$uneLigne = $req->fetch(PDO::FETCH_OBJ);
         
-        // liaison de la requête et de ses paramètres
-        $req->bindValue("idUtilisateur", utf8_decode($idUtilisateur), PDO::PARAM_INT);
+//         // liaison de la requête et de ses paramètres
+//         $req->bindValue("idUtilisateur", utf8_decode($idUtilisateur), PDO::PARAM_INT);
         
-        $req->execute();
-        while ($uneLigne = $req->fetch(PDO::FETCH_OBJ))
-        {
-            $uneTrace = DAO::getUneTrace($uneLigne->id);
-            $lesTraces[] = $uneTrace;
-        }
-        return $lesTraces;
-    }
+//         $req->execute();
+//         while ($uneLigne = $req->fetch(PDO::FETCH_OBJ))
+//         {
+//             $uneTrace = DAO::getUneTrace($uneLigne->id);
+//             $lesTraces[] = $uneTrace;
+//         }
+//         return $lesTraces;
+//     }
     
     
     public function getLesTraces($idUtilisateur) {
