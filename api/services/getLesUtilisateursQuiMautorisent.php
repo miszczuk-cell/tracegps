@@ -11,7 +11,7 @@
 // Le service retourne un flux de données XML ou JSON contenant un compte-rendu d'exécution
 
 // Les paramètres doivent être passés par la méthode GET :
-//     http://localhost/ws-php-miszczuk/tracegps/api/GetLesUtilisateursQueJautorise?pseudo=callisto&mdp=13e3668bbee30b004380052b086457b014504b3e&lang=xml
+//     http://localhost/ws-php-miszczuk/tracegps/api/GetLesUtilisateursQuiMautorisent?pseudo=callisto&mdp=13e3668bbee30b004380052b086457b014504b3e&lang=xml
 
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
@@ -46,7 +46,7 @@ else {
     	else 
     	{	// récupération de la liste des utilisateurs à l'aide de la méthode getTousLesUtilisateurs de la classe DAO
     	    $utilisateurConnecte = $dao->getUnUtilisateur($pseudo);
-    	    $lesUtilisateurs = $dao->getLesUtilisateursAutorises($utilisateurConnecte->getId());
+    	    $lesUtilisateurs = $dao->getLesUtilisateursAutorisant($utilisateurConnecte->getId());
     	    
     	    // mémorisation du nombre d'utilisateurs
     	    $nbReponses = sizeof($lesUtilisateurs);

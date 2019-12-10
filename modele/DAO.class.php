@@ -388,7 +388,6 @@ class DAO
     
     public function getLesUtilisateursAutorises($idUtilisateur){
         $texte_de_la_requete = "Select Distinct id, pseudo, mdpSha1, adrMail, numTel, niveau, dateCreation, nbTraces, dateDerniereTrace FROM tracegps_vue_utilisateurs INNER JOIN tracegps_autorisations ON tracegps_autorisations.idAutorisant = tracegps_vue_utilisateurs.id WHERE tracegps_autorisations.idAutorisant IN (SELECT tracegps_autorisations.idAutorise FROM tracegps_autorisations WHERE tracegps_autorisations.idAutorisant = ".$idUtilisateur.")";
-        echo $texte_de_la_requete;
         $req = $this->cnx->prepare($texte_de_la_requete);
         $req->execute();
         $lesUtilisateurs = array();
