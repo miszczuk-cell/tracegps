@@ -13,7 +13,7 @@
 //    d : la decision 1=oui, 0=non ($decision)
 
 // Les paramètres doivent être passés par la méthode GET :
-//     http://<hébergeur>/tracegps/api/ValiderDemandeAutorisation?a=13e3668bbee30b004380052b086457b014504b3e&b=oxygen&c=europa&d=1
+//     http://localhost/ws-php-miszczuk/tracegps/api/ValiderDemandeAutorisation?a=13e3668bbee30b004380052b086457b014504b3e&b=oxygen&c=europa&d=1
 	
 // ces variables globales sont définies dans le fichier modele/parametres.php
 global $ADR_MAIL_EMETTEUR, $ADR_SERVICE_WEB;
@@ -31,7 +31,8 @@ if ($this->getMethodeRequete() != "GET")
 {	$msg = "Erreur : méthode HTTP incorrecte.";
     $code_reponse = 406;
 }
-else {
+else 
+{
     // Les paramètres doivent être présents et corrects
     if ( $mdpSha1 == "" || $pseudoAutorisant == "" || $pseudoAutorise == "" || ( $decision != 0 && $decision != 1 ) )
     {	$message = "Erreur : données incomplètes ou incorrectes.";
