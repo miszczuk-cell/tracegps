@@ -1,7 +1,7 @@
 <?php
 // Projet TraceGPS - services web
-// fichier : api/services/SupprimerUnUtilisateur.php
-// Dernière mise à jour : 3/7/2019 par Jim
+// fichier : api/services/SupprimerUnparcourt.php
+// Dernière mise à jour : 3/3/2020
 
 // Rôle : ce service permet à un administrateur de supprimer un utilisateur (à condition qu'il ne possède aucune trace enregistrée)
 // Le service web doit recevoir 4 paramètres :
@@ -19,7 +19,7 @@ $dao = new DAO();
 // Récupération des données transmises
 $pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
 $mdpSha1 = ( empty($this->request['mdp'])) ? "" : $this->request['mdp'];
-$pseudoAsupprimer = ( empty($this->request['pseudoAsupprimer'])) ? "" : $this->request['pseudoAsupprimer'];
+$id = ( empty($this->request['idTrace'])) ? "" : $this->request['idTrace'];
 $lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
 
 // "xml" par défaut si le paramètre lang est absent ou incorrect
@@ -32,7 +32,7 @@ if ($this->getMethodeRequete() != "GET")
 }
 else {
     // Les paramètres doivent être présents
-    if ( $pseudo == "" || $mdpSha1 == "" || $pseudoAsupprimer == "" )
+    if ( $pseudo == "" || $mdpSha1 == "" || $idTrace == "" )
     {	$msg = "Erreur : données incomplètes.";
         $code_reponse = 400;
     }
@@ -43,30 +43,27 @@ else {
             $code_reponse = 401;
         }
     	else
-    	{	// contrôle d'existence de pseudoAsupprimer
-    	    $unUtilisateur = $dao->getUnUtilisateur($pseudoAsupprimer);
-    	    if ($unUtilisateur == null)
-    	    {  $msg = "Erreur : pseudo utilisateur inexistant.";
+    	{	// contrôle d'existence de trace à supprimer
+    	    $uneTrace = $dao->getUneTrace($idTrace);
+    	    if ($idTrace == null)
+    	    {  $msg = "Erreur : parcours inexistante.";
     	       $code_reponse = 400;
     	    }
     	    else
-    	    {   // si cet utilisateur possède encore des traces, sa suppression est refusée
-    	        if ( $unUtilisateur->getNbTraces() > 0 ) {
-    	            $msg = "Erreur : suppression impossible ; cet utilisateur possède encore des traces.";
-    	            $code_reponse = 400;
-    	        }
-    	        else {
-    	            // suppression de l'utilisateur dans la BDD
-    	            $ok = $dao->supprimerUnUtilisateur($pseudoAsupprimer);
+    	    {
+
+
+               // suppression de la trace
+    	            $ok = $dao->supprimerUneTrace($idTrace);
     	            if ( ! $ok ) {
-                        $msg = "Erreur : problème lors de la suppression de l'utilisateur.";
+                        $msg = "Erreur : problème lors de la suppression de ce parcours";
                         $code_reponse = 500;
                     }
                     else {
                         // envoi d'un mail de confirmation de la suppression
                         $adrMail = $unUtilisateur->getAdrMail();
-                        $sujet = "Suppression de votre compte dans le système TraceGPS";
-                        $contenuMail = "Bonjour " . $pseudoAsupprimer . "\n\nL'administrateur du service TraceGPS vient de supprimer votre compte utilisateur.";
+                        $sujet = "Suppression de votre trace dans le système TraceGPS";
+                        $contenuMail = "Bonjour " . $idTrace . "\n\nL'administrateur du service TraceGPS vient de supprimer votre trace.";
 
                         // cette variable globale est définie dans le fichier modele/parametres.php
                         global $ADR_MAIL_EMETTEUR;
