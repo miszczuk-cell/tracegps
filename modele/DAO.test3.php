@@ -7,7 +7,7 @@
 // Le code des tests restant à développer va être réparti entre les membres de l'équipe de développement.
 // Afin de limiter les conflits avec GitHub, il est décidé d'attribuer un fichier de test à chaque développeur.
 // Développeur 1 : fichier DAO.test1.php
-// Développeur 2 : fichier DAO.test2.php
+// Dével oppeur 2 : fichier DAO.test2.php
 // Développeur 3 : fichier DAO.test3.php
 // Développeur 4 : fichier DAO.test4.php
 
