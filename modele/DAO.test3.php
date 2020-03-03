@@ -9,7 +9,7 @@
 // Développeur 1 : fichier DAO.test1.php
 // Développeur 2 : fichier DAO.test2.php
 // Développeur 3 : fichier DAO.test3.php
-// Développeur 4 : fichier DAO.test4.php
+// Développeur 4 : fichier DAO.test4.php 
 
 // Quelques conseils pour le travail collaboratif :
 // avant d'attaquer un cycle de développement (début de séance, nouvelle méthode, ...), faites un Pull pour récupérer
