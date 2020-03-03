@@ -1,11 +1,14 @@
 <?php
-//      http://localhost/ws-php-miszczuk/tracegps/api/GetLesParcoursDunUtilisateur?pseudo=callisto&mdp=13e3668bbee30b004380052b086457b014504b3e&lang=xml
+// Service Web qui retourne les traces d'un utilisateur
+// Service non terminé car il ne prend pas en compte le paramètre pseudoConsulte
+//      http://localhost/ws-php-miszczuk/tracegps/api/GetLesParcoursDunUtilisateur?pseudo=callisto&mdp=13e3668bbee30b004380052b086457b014504b3e&pseudoConsulte=oxygen&lang=xml
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
 // Récupération des données transmises
 $pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
 $mdpSha1 = ( empty($this->request['mdp'])) ? "" : $this->request['mdp'];
 $lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
+$pseudoConsulte = ( empty($this->request['pseudoConsulte'])) ? "" : $this->request['pseudoConsulte'];
 
 // "xml" par défaut si le paramètre lang est absent ou incorrect
 if ($lang != "json") $lang = "xml";
@@ -31,23 +34,32 @@ else {
         $code_reponse = 401;
     }
     else
-    {	// récupération de la liste des utilisateurs à l'aide de la méthode getTousLesUtilisateurs de la classe DAO
-        $utilisateurConnecte = $dao->getUnUtilisateur($pseudo);
-        $lesTraces = $dao->getLesTraces($utilisateurConnecte->getId());
+    {
 
-        // mémorisation du nombre d'utilisateurs
-        $nbReponses = sizeof($lesTraces);
+      $utilisateurConsulte = $dao->getUnUtilisateur($pseudoConsulte);
+      $utilisateurConsultant = $dao->getUnUtilisateur($pseudo);
+      $lesUtilisateursConsultes = $dao->getLesUtilisateursAutorises($utilisateurConsultant->getId());
+      foreach ($lesUtilisateursConsultes as $unUtilisateur){
+        echo $unUtilisateur->getId();
+      }
 
-        if ($nbReponses == 0) {
-            $msg = "Aucun parcours.";
-            $code_reponse = 200;
-        }
-        else {
-            $msg = $nbReponses . " parcours.";
-            $code_reponse = 200;
-        }
+      // récupération de la liste des utilisateurs à l'aide de la méthode getTousLesUtilisateurs de la classe DAO
+      $utilisateurConnecte = $dao->getUnUtilisateur($pseudo);
+      $lesTraces = $dao->getLesTraces($utilisateurConnecte->getId());
+
+      // mémorisation du nombre d'utilisateurs
+      $nbReponses = sizeof($lesTraces);
+
+      if ($nbReponses == 0) {
+          $msg = "Aucun parcours.";
+          $code_reponse = 200;
+      }
+      else {
+          $msg = $nbReponses . " parcours.";
+          $code_reponse = 200;
+      }
     }
-    }
+  }
 }
 // ferme la connexion à MySQL :
 unset($dao);
@@ -126,4 +138,72 @@ function creerFluxXML($msg, $lesTraces)
 
 	// renvoie le contenu XML
 	return $doc->saveXML();
+}
+
+function creerFluxJSON($msg, $lesTraces)
+{
+    /* Exemple de code JSON
+        {
+            "data": {
+                "reponse": "2 utilisateur(s).",
+                "donnees": {
+                    "lesUtilisateurs": [
+                        {
+                            "id": "2",
+                            "pseudo": "callisto",
+                            "adrMail": "delasalle.sio.eleves@gmail.com",
+                            "numTel": "22.33.44.55.66",
+                            "niveau": "1",
+                            "dateCreation": "2018-08-12 19:45:23",
+                            "nbTraces": "2",
+                            "dateDerniereTrace": "2018-01-19 13:08:48"
+                        },
+                        {
+                            "id": "3",
+                            "pseudo": "europa",
+                            "adrMail": "delasalle.sio.eleves@gmail.com",
+                            "numTel": "22.33.44.55.66",
+                            "niveau": "1",
+                            "dateCreation": "2018-08-12 19:45:23",
+                            "nbTraces": "0"
+                        }
+                    ]
+                }
+            }
+        }
+     */
+
+
+    if (sizeof($lesTraces) == 0) {
+        // construction de l'élément "data"
+        $elt_data = ["reponse" => $msg];
+    }
+    else {
+        // construction d'un tableau contenant les traces
+        $lesObjetsDuTableau = array();
+        foreach ($lesTraces as $uneTrace)
+        {	// crée une ligne dans le tableau
+            $unObjetTrace = array();
+            $unObjetTrace["id"] = $uneTrace->getId();
+            $unObjetTrace["dateDebut"] = $uneTrace->getDateHeureDebut();
+            if(empty($uneTrace->getDateHeureFin()) == false)
+            {
+              $unObjetTrace["dateFin"] = $uneTrace->getDateHeureFin();
+            }
+            $unObjetTrace["terminee"] = $uneTrace->getTerminee();
+            $unObjetTrace["idUtilisateur"] = $uneTrace->getIdUtilisateur();
+            $lesObjetsDuTableau[] = $unObjetTrace;
+        }
+        // construction de l'élément "lesTraces"
+        $elt_trace = ["lesTraces" => $lesObjetsDuTableau];
+
+        // construction de l'élément "data"
+        $elt_data = ["reponse" => $msg, "donnees" => $elt_trace];
+    }
+
+    // construction de la racine
+    $elt_racine = ["data" => $elt_data];
+
+    // retourne le contenu JSON (l'option JSON_PRETTY_PRINT gère les sauts de ligne et l'indentation)
+    return json_encode($elt_racine, JSON_PRETTY_PRINT);
 }
