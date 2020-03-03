@@ -12,15 +12,15 @@
 // Le service retourne un flux de données XML ou JSON contenant un compte-rendu d'exécution
 
 // Les paramètres doivent être passés par la méthode GET :
-//     http://localhost/xs-php-miszczuk/tracegps/api/SupprimerUnParcours?pseudo=admin&mdp=ff9fff929a1292db1c00e3142139b22ee4925177&idTrace=oxygen&lang=xml
-
+ //http://localhost/ws-php-masse/tracegps/api/SupprimerUnParcours?pseudo=admin&mdp=ff9fff929a1292db1c00e3142139b22ee4925177&idTrace=2&lang=xml&idUtilisateur=2
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
 // Récupération des données transmises
 $pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
 $mdpSha1 = ( empty($this->request['mdp'])) ? "" : $this->request['mdp'];
-$id = ( empty($this->request['idTrace'])) ? "" : $this->request['idTrace'];
+$idTrace = ( empty($this->request['idTrace'])) ? "" : $this->request['idTrace'];
 $lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
+//$idUtilisateur = ( empty($this->request['idUtilisateur'])) ? "" : $this->request['idUtilisateur'];
 
 // "xml" par défaut si le paramètre lang est absent ou incorrect
 if ($lang != "json") $lang = "xml";
@@ -37,8 +37,8 @@ else {
         $code_reponse = 400;
     }
     else
-    {	// il faut être administrateur pour supprimer un utilisateur
-        if ( $dao->getNiveauConnexion($pseudo, $mdpSha1) != 2 )
+    {	// il faut être authentifié pour supprimer un parcours
+        if ( $dao->getNiveauConnexion($pseudo, $mdpSha1) == 0 )
         {   $msg = "Erreur : authentification incorrecte.";
             $code_reponse = 401;
         }
@@ -46,41 +46,30 @@ else {
     	{	// contrôle d'existence de trace à supprimer
     	    $uneTrace = $dao->getUneTrace($idTrace);
     	    if ($idTrace == null)
-    	    {  $msg = "Erreur : parcours inexistante.";
-    	       $code_reponse = 400;
+    	    {  $msg = "Erreur : parcours inexistant.";
+    	       $code_reponse = 404;
     	    }
     	    else
-    	    {
-
-
-               // suppression de la trace
+    	    {   // si cet utilisateur n'est pas propriétaire de la trace, sa suppression est refusée
+              $utilisateur = $dao->getUnUtilisateur($pseudo);
+    	        if ( $uneTrace->getIdUtilisateur() != $utilisateur->getId() ) {
+    	            $msg = "Erreur : vous n'êtes pas le propriétaire de ce parcours.";
+    	            $code_reponse = 401;
+    	        }
+    	        else {
+    	            // suppression du parcours dans la BDD
     	            $ok = $dao->supprimerUneTrace($idTrace);
     	            if ( ! $ok ) {
                         $msg = "Erreur : problème lors de la suppression de ce parcours";
                         $code_reponse = 500;
                     }
                     else {
-                        // envoi d'un mail de confirmation de la suppression
-                        $adrMail = $unUtilisateur->getAdrMail();
-                        $sujet = "Suppression de votre trace dans le système TraceGPS";
-                        $contenuMail = "Bonjour " . $idTrace . "\n\nL'administrateur du service TraceGPS vient de supprimer votre trace.";
-
-                        // cette variable globale est définie dans le fichier modele/parametres.php
-                        global $ADR_MAIL_EMETTEUR;
-
-                        $ok = Outils::envoyerMail($adrMail, $sujet, $contenuMail, $ADR_MAIL_EMETTEUR);
-                        if ( ! $ok ) {
-                            // si l'envoi de mail a échoué, réaffichage de la vue avec un message explicatif
-                            $msg = "Suppression effectuée ; l'envoi du courriel à l'utilisateur a rencontré un problème.";
-                            $code_reponse = 500;
-                        }
-                        else {
                             // tout a fonctionné
-                            $msg = "Suppression effectuée ; un courriel va être envoyé à l'utilisateur.";
+                            $msg = "Parcours supprimé.";
                             $code_reponse = 200;
                         }
                     }
-                }
+              }
     	    }
     	}
     }
@@ -116,7 +105,7 @@ function creerFluxXML($msg)
 	$doc->encoding = 'UTF-8';
 
 	// crée un commentaire et l'encode en UTF-8
-	$elt_commentaire = $doc->createComment('Service web SupprimerUnUtilisateur - BTS SIO - Lycée De La Salle - Rennes');
+	$elt_commentaire = $doc->createComment('Service web SupprimerUnParcours - BTS SIO - Lycée De La Salle - Rennes');
 	// place ce commentaire à la racine du document XML
 	$doc->appendChild($elt_commentaire);
 

@@ -12,7 +12,7 @@
 // Le service retourne un flux de données XML ou JSON contenant un compte-rendu d'exécution
 
 // Les paramètres doivent être passés par la méthode GET :
-//     http://localhost/xs-php-miszczuk/tracegps/api/SupprimerUnUtilisateur?pseudo=admin&mdp=ff9fff929a1292db1c00e3142139b22ee4925177&pseudoAsupprimer=oxygen&lang=xml
+//     http://localhost/ws-php-miszczuk/tracegps/api/SupprimerUnUtilisateur?pseudo=admin&mdp=ff9fff929a1292db1c00e3142139b22ee4925177&pseudoAsupprimer=oxygen&lang=xml
 
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
@@ -42,7 +42,7 @@ else {
         {   $msg = "Erreur : authentification incorrecte.";
             $code_reponse = 401;
         }
-    	else 
+    	else
     	{	// contrôle d'existence de pseudoAsupprimer
     	    $unUtilisateur = $dao->getUnUtilisateur($pseudoAsupprimer);
     	    if ($unUtilisateur == null)
@@ -67,10 +67,10 @@ else {
                         $adrMail = $unUtilisateur->getAdrMail();
                         $sujet = "Suppression de votre compte dans le système TraceGPS";
                         $contenuMail = "Bonjour " . $pseudoAsupprimer . "\n\nL'administrateur du service TraceGPS vient de supprimer votre compte utilisateur.";
-                        
+
                         // cette variable globale est définie dans le fichier modele/parametres.php
                         global $ADR_MAIL_EMETTEUR;
-                        
+
                         $ok = Outils::envoyerMail($adrMail, $sujet, $contenuMail, $ADR_MAIL_EMETTEUR);
                         if ( ! $ok ) {
                             // si l'envoi de mail a échoué, réaffichage de la vue avec un message explicatif
@@ -113,27 +113,27 @@ exit;
 function creerFluxXML($msg)
 {	// crée une instance de DOMdocument (DOM : Document Object Model)
 	$doc = new DOMDocument();
-	
+
 	// specifie la version et le type d'encodage
 	$doc->version = '1.0';
 	$doc->encoding = 'UTF-8';
-	
+
 	// crée un commentaire et l'encode en UTF-8
 	$elt_commentaire = $doc->createComment('Service web SupprimerUnUtilisateur - BTS SIO - Lycée De La Salle - Rennes');
 	// place ce commentaire à la racine du document XML
 	$doc->appendChild($elt_commentaire);
-	
+
 	// crée l'élément 'data' à la racine du document XML
 	$elt_data = $doc->createElement('data');
 	$doc->appendChild($elt_data);
-	
+
 	// place l'élément 'reponse' dans l'élément 'data'
 	$elt_reponse = $doc->createElement('reponse', $msg);
 	$elt_data->appendChild($elt_reponse);
 
 	// Mise en forme finale
 	$doc->formatOutput = true;
-	
+
 	// renvoie le contenu XML
 	return $doc->saveXML();
 }
@@ -150,13 +150,13 @@ function creerFluxJSON($msg)
             }
          }
      */
-    
+
     // construction de l'élément "data"
     $elt_data = ["reponse" => $msg];
-    
+
     // construction de la racine
     $elt_racine = ["data" => $elt_data];
-    
+
     // retourne le contenu JSON (l'option JSON_PRETTY_PRINT gère les sauts de ligne et l'indentation)
     return json_encode($elt_racine, JSON_PRETTY_PRINT);
 }
