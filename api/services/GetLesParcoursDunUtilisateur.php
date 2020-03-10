@@ -1,5 +1,5 @@
 <?php
-// Service Web qui retourne les traces d'un utilisateur
+// Service Web qui retourne les traces d'un utilisateur si vous êtes autorisé à consulter
 // Service non terminé car il ne prend pas en compte le paramètre pseudoConsulte
 //      http://localhost/ws-php-miszczuk/tracegps/api/GetLesParcoursDunUtilisateur?pseudo=callisto&mdp=13e3668bbee30b004380052b086457b014504b3e&pseudoConsulte=oxygen&lang=xml
 // connexion du serveur web à la base MySQL
@@ -22,60 +22,122 @@ if ($this->getMethodeRequete() != "GET")
 {	$msg = "Erreur : méthode HTTP incorrecte.";
 $code_reponse = 406;
 }
-else {
+else
+{
     // Les paramètres doivent être présents
-    if ( $pseudo == "" || $mdpSha1 == "" )
-    {	$msg = "Erreur : données incomplètes.";
-    $code_reponse = 400;
-    }
-    else
-    {	if ( $dao->getNiveauConnexion($pseudo, $mdpSha1) == 0 ) {
-        $msg = "Erreur : authentification incorrecte.";
-        $code_reponse = 401;
+  if ( $pseudo == "" || $mdpSha1 == "" )
+  {	$msg = "Erreur : données incomplètes.";
+  $code_reponse = 400;
+  if ($lang == "xml")
+  {
+      $content_type = "application/xml; charset=utf-8";      // indique le format XML pour la réponse
+      $donnees = creerFluxXML($msg, $lesTraces);
+  }
+  else
+  {
+    $content_type = "application/json; charset=utf-8";      // indique le format Json pour la réponse
+    $donnees = creerFluxJSON($msg, $lesTraces);
+  }
+  $this->envoyerReponse($code_reponse, $content_type, $donnees);
+  }
+  else
+  {
+    if ( $dao->getNiveauConnexion($pseudo, $mdpSha1) == 0 )
+    {
+      $msg = "Erreur : authentification incorrecte.";
+      $code_reponse = 401;
+      if ($lang == "xml")
+      {
+          $content_type = "application/xml; charset=utf-8";      // indique le format XML pour la réponse
+          $donnees = creerFluxXML($msg, $lesTraces);
+      }
+      else
+      {
+        $content_type = "application/json; charset=utf-8";      // indique le format Json pour la réponse
+        $donnees = creerFluxJSON($msg, $lesTraces);
+      }
+      $this->envoyerReponse($code_reponse, $content_type, $donnees);
     }
     else
     {
+      if($dao->existePseudoUtilisateur($pseudoConsulte))
+      {
+        $estAutorise = 0;
+        $utilisateurConsulte = $dao->getUnUtilisateur($pseudoConsulte); //L'utilisateur dont on consulte les traces
+        $utilisateurConsultant = $dao->getUnUtilisateur($pseudo); //L'utilisateur qui doit être autorisé par le consulté
+        $lesUtilisateursConsultes = $dao->getLesUtilisateursAutorises($utilisateurConsultant->getId());
+        foreach ($lesUtilisateursConsultes as $unUtilisateur)
+        {
+          if (($utilisateurConsulte->getId() == $unUtilisateur->getId()) OR $utilisateurConsulte->getId() == $utilisateurConsultant->getId())
+          {
+            $estAutorise = 1;
+          }
+        }
+        if($estAutorise == 1)
+        {
+          // récupération de la liste des utilisateurs à l'aide de la méthode getTousLesUtilisateurs de la classe DAO
+          $utilisateurConnecte = $dao->getUnUtilisateur($pseudo);
+          $lesTraces = $dao->getLesTraces($utilisateurConsulte->getId());
 
-      $utilisateurConsulte = $dao->getUnUtilisateur($pseudoConsulte);
-      $utilisateurConsultant = $dao->getUnUtilisateur($pseudo);
-      $lesUtilisateursConsultes = $dao->getLesUtilisateursAutorises($utilisateurConsultant->getId());
-      foreach ($lesUtilisateursConsultes as $unUtilisateur){
-        echo $unUtilisateur->getId();
-      }
+          // mémorisation du nombre d'utilisateurs
+          $nbReponses = sizeof($lesTraces);
 
-      // récupération de la liste des utilisateurs à l'aide de la méthode getTousLesUtilisateurs de la classe DAO
-      $utilisateurConnecte = $dao->getUnUtilisateur($pseudo);
-      $lesTraces = $dao->getLesTraces($utilisateurConnecte->getId());
+          if ($nbReponses == 0) {
+              $msg = "Aucun parcours.";
+              $code_reponse = 200;
+          }
+          else {
+              $msg = $nbReponses . " parcours pour l'utilisateurs ".$utilisateurConsulte->getPseudo();
+              $code_reponse = 200;
+          }
+          if ($lang == "xml") {
+              $content_type = "application/xml; charset=utf-8";      // indique le format XML pour la réponse
+              $donnees = creerFluxXML($msg, $lesTraces);
+          }
+          else {
+              $content_type = "application/json; charset=utf-8";      // indique le format Json pour la réponse
+              $donnees = creerFluxJSON($msg, $lesTraces);
+          }
 
-      // mémorisation du nombre d'utilisateurs
-      $nbReponses = sizeof($lesTraces);
+          // envoi de la réponse HTTP
+          $this->envoyerReponse($code_reponse, $content_type, $donnees);
 
-      if ($nbReponses == 0) {
-          $msg = "Aucun parcours.";
+        }
+        else
+        {
+          $msg = "Vous n'êtes pas autorisé à consulter les parcours de cet utilisateur.";
           $code_reponse = 200;
+          if ($lang == "xml")
+          {
+              $content_type = "application/xml; charset=utf-8";      // indique le format XML pour la réponse
+              $donnees = creerFluxXML($msg, $lesTraces);
+          }
+          else
+          {
+            $content_type = "application/json; charset=utf-8";      // indique le format Json pour la réponse
+            $donnees = creerFluxJSON($msg, $lesTraces);
+          }
+          $this->envoyerReponse($code_reponse, $content_type, $donnees);
+        }
       }
-      else {
-          $msg = $nbReponses . " parcours.";
-          $code_reponse = 200;
+      $msg = "L'utilisateur ".$pseudoConsulte." n'exite pas.";
+      $code_reponse = 200;
+      if ($lang == "xml")
+      {
+          $content_type = "application/xml; charset=utf-8";      // indique le format XML pour la réponse
+          $donnees = creerFluxXML($msg, $lesTraces);
       }
+      else
+      {
+        $content_type = "application/json; charset=utf-8";      // indique le format Json pour la réponse
+        $donnees = creerFluxJSON($msg, $lesTraces);
+      }
+      $this->envoyerReponse($code_reponse, $content_type, $donnees);
     }
   }
 }
 // ferme la connexion à MySQL :
 unset($dao);
-
-if ($lang == "xml") {
-    $content_type = "application/xml; charset=utf-8";      // indique le format XML pour la réponse
-    $donnees = creerFluxXML($msg, $lesTraces);
-}
-else {
-    $content_type = "application/json; charset=utf-8";      // indique le format Json pour la réponse
-    $donnees = creerFluxJSON($msg, $lesTraces);
-}
-
-// envoi de la réponse HTTP
-$this->envoyerReponse($code_reponse, $content_type, $donnees);
-
 // fin du programme (pour ne pas enchainer sur les 2 fonctions qui suivent)
 exit;
 

@@ -12,12 +12,8 @@
 // Le service retourne un flux de données XML ou JSON contenant un compte-rendu d'exécution
 
 // Les paramètres doivent être passés par la méthode GET :
-<<<<<<< HEAD
 //     http://localhost/ws-php-miszczuk/tracegps/api/SupprimerUnParcours?pseudo=admin&mdp=ff9fff929a1292db1c00e3142139b22ee4925177&idTrace=oxygen&lang=xml
 
-=======
- //http://localhost/ws-php-masse/tracegps/api/SupprimerUnParcours?pseudo=admin&mdp=ff9fff929a1292db1c00e3142139b22ee4925177&idTrace=2&lang=xml&idUtilisateur=2
->>>>>>> 3b5c83b56532919d8489ab41add1091fe1a0a0b7
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
 // Récupération des données transmises
